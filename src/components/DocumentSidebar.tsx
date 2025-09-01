@@ -1,10 +1,21 @@
+
 import { useState } from "react";
-import { ChevronRight, ChevronDown, FileText, Folder } from "lucide-react";
+import { ChevronRight, ChevronDown, FileText, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+interface StoredDocument {
+  id: string;
+  name: string;
+  data: any;
+  timestamp: number;
+}
 
 interface DocumentSidebarProps {
-  documentName: string;
-  documentData: any;
+  documents: StoredDocument[];
+  selectedDocumentId: string;
+  onDocumentSelect: (documentId: string) => void;
+  onDocumentDelete: (documentId: string) => void;
   onSectionClick: (sectionId: string) => void;
   activeSectionId?: string;
 }
@@ -14,17 +25,22 @@ interface SectionStatus {
 }
 
 export const DocumentSidebar = ({ 
-  documentName, 
-  documentData, 
+  documents,
+  selectedDocumentId,
+  onDocumentSelect,
+  onDocumentDelete,
   onSectionClick, 
   activeSectionId 
 }: DocumentSidebarProps) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [hoveredDocumentId, setHoveredDocumentId] = useState<string>("");
   const [sectionStatus] = useState<SectionStatus>({
     "2.1 Before Commencement:": 'completed',
     "2.2 Lying of bricks": 'in-progress',
     "2.3 Mortar": 'not-listened',
   });
+
+  const selectedDocument = documents.find(doc => doc.id === selectedDocumentId);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => ({
@@ -41,12 +57,9 @@ export const DocumentSidebar = ({
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'completed': return 'Completed';
-      case 'in-progress': return 'In Progress';
-      default: return 'Not Listened Yet';
-    }
+  const handleDeleteClick = (e: React.MouseEvent, documentId: string) => {
+    e.stopPropagation();
+    onDocumentDelete(documentId);
   };
 
   return (
@@ -72,96 +85,126 @@ export const DocumentSidebar = ({
             <span>Documents</span>
           </div>
 
-          {/* Document Root */}
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2 p-2 rounded-md bg-brand-surface-hover">
-              <Folder className="h-4 w-4 text-brand-accent" />
-              <span className="text-sm font-medium text-brand-primary">{documentName}</span>
-            </div>
-
-            {/* Document Sections */}
-            <div className="ml-4 space-y-1">
-              {Object.entries(documentData).map(([sectionKey, sectionData]: [string, any]) => {
-                const hasSubtopics = sectionData.subtopics && Object.keys(sectionData.subtopics).length > 0;
-                const isExpanded = expandedSections[sectionKey];
-                const isActive = activeSectionId === sectionKey;
-
-                return (
-                  <div key={sectionKey}>
-                    {/* Main Section */}
-                    <div
-                      className={cn(
-                        "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
-                        isActive ? "bg-brand-accent/10 text-brand-accent" : "hover:bg-brand-surface-hover",
-                        "group"
-                      )}
-                      onClick={() => {
-                        onSectionClick(sectionKey);
-                        if (hasSubtopics) {
-                          toggleSection(sectionKey);
-                        }
-                      }}
-                    >
-                      <div className="flex items-center space-x-2 flex-1">
-                        {hasSubtopics && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleSection(sectionKey);
-                            }}
-                            className="p-0.5 hover:bg-brand-accent/20 rounded"
-                          >
-                            {isExpanded ? (
-                              <ChevronDown className="h-3 w-3" />
-                            ) : (
-                              <ChevronRight className="h-3 w-3" />
-                            )}
-                          </button>
-                        )}
-                        <span className="text-sm">{sectionKey}</span>
-                      </div>
-                    </div>
-
-                    {/* Subtopics */}
-                    {hasSubtopics && isExpanded && (
-                      <div className="ml-6 mt-1 space-y-1">
-                        {Object.entries(sectionData.subtopics).map(([subtopicKey, subtopicData]: [string, any]) => {
-                          const isSubtopicActive = activeSectionId === subtopicKey;
-                          const status = sectionStatus[subtopicKey] || 'not-listened';
-
-                          return (
-                            <div
-                              key={subtopicKey}
-                              className={cn(
-                                "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
-                                isSubtopicActive ? "bg-brand-accent/10 text-brand-accent" : "hover:bg-brand-surface-hover"
-                              )}
-                              onClick={() => onSectionClick(subtopicKey)}
-                            >
-                              <div className="flex items-center space-x-2 flex-1">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-xs bg-brand-secondary/10 px-1.5 py-0.5 rounded text-brand-secondary">
-                                    {subtopicKey.split(' ')[0]}
-                                  </span>
-                                  <span className="text-sm">{subtopicKey.split(' ').slice(1).join(' ')}</span>
-                                </div>
-                              </div>
-                              
-                              <div className="flex items-center space-x-2">
-                                <div className={cn("w-2 h-2 rounded-full", getStatusColor(status))} />
-                                <span className="text-xs text-muted-foreground">
-                                  {status === 'completed' ? '2:50' : status === 'in-progress' ? '6:50' : '6:50'}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+          {/* Documents List */}
+          <div className="space-y-2">
+            {documents.map((document) => (
+              <div key={document.id}>
+                {/* Document Item */}
+                <div
+                  className={cn(
+                    "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors group",
+                    selectedDocumentId === document.id 
+                      ? "bg-brand-accent/10 text-brand-accent" 
+                      : "hover:bg-brand-surface-hover"
+                  )}
+                  onClick={() => onDocumentSelect(document.id)}
+                  onMouseEnter={() => setHoveredDocumentId(document.id)}
+                  onMouseLeave={() => setHoveredDocumentId("")}
+                >
+                  <div className="flex items-center space-x-2 flex-1 min-w-0">
+                    <FileText className="h-4 w-4 text-brand-accent flex-shrink-0" />
+                    <span className="text-sm font-medium truncate">{document.name}</span>
                   </div>
-                );
-              })}
-            </div>
+                  
+                  {hoveredDocumentId === document.id && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => handleDeleteClick(e, document.id)}
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+
+                {/* Document Sections - Only show for selected document */}
+                {selectedDocumentId === document.id && selectedDocument && (
+                  <div className="ml-4 mt-2 space-y-1">
+                    {Object.entries(selectedDocument.data).map(([sectionKey, sectionData]: [string, any]) => {
+                      const hasSubtopics = sectionData.subtopics && Object.keys(sectionData.subtopics).length > 0;
+                      const isExpanded = expandedSections[sectionKey];
+                      const isActive = activeSectionId === sectionKey;
+
+                      return (
+                        <div key={sectionKey}>
+                          {/* Main Section */}
+                          <div
+                            className={cn(
+                              "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
+                              isActive ? "bg-brand-accent/10 text-brand-accent" : "hover:bg-brand-surface-hover",
+                              "group"
+                            )}
+                            onClick={() => {
+                              onSectionClick(sectionKey);
+                              if (hasSubtopics) {
+                                toggleSection(sectionKey);
+                              }
+                            }}
+                          >
+                            <div className="flex items-center space-x-2 flex-1">
+                              {hasSubtopics && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleSection(sectionKey);
+                                  }}
+                                  className="p-0.5 hover:bg-brand-accent/20 rounded"
+                                >
+                                  {isExpanded ? (
+                                    <ChevronDown className="h-3 w-3" />
+                                  ) : (
+                                    <ChevronRight className="h-3 w-3" />
+                                  )}
+                                </button>
+                              )}
+                              <span className="text-sm">{sectionKey}</span>
+                            </div>
+                          </div>
+
+                          {/* Subtopics */}
+                          {hasSubtopics && isExpanded && (
+                            <div className="ml-6 mt-1 space-y-1">
+                              {Object.entries(sectionData.subtopics).map(([subtopicKey, subtopicData]: [string, any]) => {
+                                const isSubtopicActive = activeSectionId === subtopicKey;
+                                const status = sectionStatus[subtopicKey] || 'not-listened';
+
+                                return (
+                                  <div
+                                    key={subtopicKey}
+                                    className={cn(
+                                      "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
+                                      isSubtopicActive ? "bg-brand-accent/10 text-brand-accent" : "hover:bg-brand-surface-hover"
+                                    )}
+                                    onClick={() => onSectionClick(subtopicKey)}
+                                  >
+                                    <div className="flex items-center space-x-2 flex-1">
+                                      <div className="flex items-center space-x-2">
+                                        <span className="text-xs bg-brand-secondary/10 px-1.5 py-0.5 rounded text-brand-secondary">
+                                          {subtopicKey.split(' ')[0]}
+                                        </span>
+                                        <span className="text-sm">{subtopicKey.split(' ').slice(1).join(' ')}</span>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center space-x-2">
+                                      <div className={cn("w-2 h-2 rounded-full", getStatusColor(status))} />
+                                      <span className="text-xs text-muted-foreground">
+                                        {status === 'completed' ? '2:50' : status === 'in-progress' ? '6:50' : '6:50'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
