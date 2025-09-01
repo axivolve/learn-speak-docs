@@ -67,7 +67,7 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
       }
 
       const responseData = await response.json();
-      onUploadSuccess(responseData, documentName);
+      onUploadSuccess(responseData.data, documentName);
       toast({
         title: "Upload successful",
         description: "Document processed successfully!",
