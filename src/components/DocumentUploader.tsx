@@ -53,61 +53,21 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
     setIsUploading(true);
     
     try {
-      // Simulate API call for now - replace with actual endpoint
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock response data
-      const mockData = {
-        "1. INTRODUCTION:": {
-          "text": "This method statement describes the systematic approach for construction activities, ensuring quality, safety, and adherence to specifications.",
-          "hindi_text": "यह पद्धति कथन निर्माण गतिविधियों के लिए व्यवस्थित दृष्टिकोण का वर्णन करता है।",
-          "guj_text": "આ પદ્ધતિ નિવેદન બાંધકામ પ્રવૃત્તિઓ માટે વ્યવસ્થિત અભિગમનું વર્ણન કરે છે।",
-          "subtopics": {},
-          "eng_speech_url": "/audio/intro_eng.mp3",
-          "hindi_speech_url": "/audio/intro_hindi.mp3",
-          "guj_speech_url": "/audio/intro_guj.mp3"
-        },
-        "2. METHODOLOGY:": {
-          "text": "",
-          "subtopics": {
-            "2.1 Before Commencement:": {
-              "text": "Prior to brick work commencement, all preparatory work must be completed including site preparation, material procurement, and quality checks.",
-              "hindi_text": "ईंट कार्य शुरू करने से पहले, सभी तैयारी कार्य पूरा होना चाहिए।",
-              "guj_text": "ઈંટના કામની શરૂઆત પહેલાં, બધા પ્રારંભિક કામ પૂર્ણ હોવા જોઈએ।",
-              "eng_speech_url": "/audio/before_eng.mp3",
-              "hindi_speech_url": "/audio/before_hindi.mp3",
-              "guj_speech_url": "/audio/before_guj.mp3"
-            },
-            "2.2 Lying of bricks": {
-              "text": "Brick laying shall be done in accordance with the approved drawings and specifications, maintaining proper alignment and level.",
-              "hindi_text": "ईंट बिछाना अनुमोदित चित्र और विशिष्टताओं के अनुसार किया जाना चाहिए।",
-              "guj_text": "ઈંટ બિછાવવાનું કામ મંજૂર નકશા અને વિશેષતાઓ અનુસાર કરવું જોઈએ।",
-              "eng_speech_url": "/audio/laying_eng.mp3",
-              "hindi_speech_url": "/audio/laying_hindi.mp3",
-              "guj_speech_url": "/audio/laying_guj.mp3"
-            },
-            "2.3 Mortar": {
-              "text": "Mortar mixing shall be done as per specifications using proper cement to sand ratio and adequate water content.",
-              "hindi_text": "मोर्टार मिश्रण उचित सीमेंट और रेत अनुपात के साथ किया जाना चाहिए।",
-              "guj_text": "મોર્ટાર મિશ્રણ યોગ્ય સિમેન્ટ અને રેતનાં પ્રમાણ સાથે કરવું જોઈએ।",
-              "eng_speech_url": "/audio/mortar_eng.mp3",
-              "hindi_speech_url": "/audio/mortar_hindi.mp3",
-              "guj_speech_url": "/audio/mortar_guj.mp3"
-            }
-          }
-        },
-        "3. QUALITY ASSURANCE:": {
-          "text": "Quality control measures shall be implemented throughout the construction process to ensure compliance with standards and specifications.",
-          "hindi_text": "गुणवत्ता नियंत्रण उपाय निर्माण प्रक्रिया के दौरान लागू किए जाने चाहिए।",
-          "guj_text": "ગુણવત્તા નિયંત્રણના પગલાં બાંધકામ પ્રક્રિયા દરમિયાન અમલ કરવા જોઈએ।",
-          "subtopics": {},
-          "eng_speech_url": "/audio/quality_eng.mp3",
-          "hindi_speech_url": "/audio/quality_hindi.mp3",
-          "guj_speech_url": "/audio/quality_guj.mp3"
-        }
-      };
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('save_intermediate', 'true');
 
-      onUploadSuccess(mockData, documentName);
+      const response = await fetch('https://b292a4ac987b.ngrok-free.app/process-document', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      onUploadSuccess(responseData, documentName);
       toast({
         title: "Upload successful",
         description: "Document processed successfully!",
