@@ -36,6 +36,35 @@ All colors MUST be HSL.
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
+    /* Document Learning Platform Design System */
+    --brand-primary: 222 47% 11%;
+    --brand-secondary: 215 25% 27%;
+    --brand-accent: 213 93% 65%;
+    --brand-surface: 220 13% 97%;
+    --brand-surface-hover: 220 13% 95%;
+    
+    /* Status Colors */
+    --status-completed: 142 76% 36%;
+    --status-progress: 43 96% 56%;
+    --status-pending: 215 20% 65%;
+    
+    /* Audio Player */
+    --player-background: 220 13% 97%;
+    --player-progress: 213 93% 65%;
+    
+    /* Sidebar */
+    --sidebar-bg: 220 13% 98%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-hover: 220 13% 95%;
+    
+    /* Content */
+    --content-bg: 0 0% 100%;
+    --content-border: 220 13% 91%;
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;

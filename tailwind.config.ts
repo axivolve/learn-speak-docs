@@ -61,7 +61,31 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				brand: {
+					primary: 'hsl(var(--brand-primary))',
+					secondary: 'hsl(var(--brand-secondary))',
+					accent: 'hsl(var(--brand-accent))',
+					surface: 'hsl(var(--brand-surface))',
+					'surface-hover': 'hsl(var(--brand-surface-hover))'
+				},
+				status: {
+					completed: 'hsl(var(--status-completed))',
+					progress: 'hsl(var(--status-progress))',
+					pending: 'hsl(var(--status-pending))'
+				},
+				player: {
+					background: 'hsl(var(--player-background))',
+					progress: 'hsl(var(--player-progress))'
+				},
+				content: {
+					bg: 'hsl(var(--content-bg))',
+					border: 'hsl(var(--content-border))'
 				}
+			},
+			transitionTimingFunction: {
+				'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+				'spring': 'cubic-bezier(0.16, 1, 0.3, 1)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
