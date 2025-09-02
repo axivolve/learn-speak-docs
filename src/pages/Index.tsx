@@ -93,16 +93,6 @@ const Index = () => {
 
   const activeDocument = documents.find(doc => doc.id === activeDocumentId);
 
-  if (documents.length === 0) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-8">
-        <div className="w-full max-w-2xl">
-          <DocumentUploader onUploadSuccess={handleUploadSuccess} />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
@@ -144,7 +134,7 @@ const Index = () => {
         </div>
 
         {/* Content Blocks */}
-        {activeDocument && (
+        {activeDocument ? (
           <div className="p-6 space-y-6">
             {Object.entries(activeDocument.data).map(([sectionKey, sectionData]: [string, any]) => (
               <div key={sectionKey} id={`section-${sectionKey}`}>
@@ -157,6 +147,13 @@ const Index = () => {
                 />
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-muted-foreground mb-2">No documents uploaded</h2>
+              <p className="text-muted-foreground">Click "Add Document" to get started</p>
+            </div>
           </div>
         )}
       </div>
