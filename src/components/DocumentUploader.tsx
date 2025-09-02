@@ -91,10 +91,6 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
   return (
     <Card className="p-8 bg-brand-surface border-content-border">
       <div className="text-center space-y-6">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-brand-primary">Upload Document</h2>
-          <p className="text-muted-foreground">Upload a PDF or Word document to generate audio narration</p>
-        </div>
 
         <div className="space-y-4">
           <div className="relative">

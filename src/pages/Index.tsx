@@ -4,7 +4,7 @@ import { DocumentUploader } from "@/components/DocumentUploader";
 import { DocumentSidebar } from "@/components/DocumentSidebar";
 import { ContentBlock } from "@/components/ContentBlock";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 interface StoredDocument {
@@ -125,6 +125,12 @@ const Index = () => {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Upload Document</DialogTitle>
+                    <DialogDescription>
+                      Upload a PDF or Word document to generate audio narration
+                    </DialogDescription>
+                  </DialogHeader>
                   <DocumentUploader onUploadSuccess={handleUploadSuccess} />
                 </DialogContent>
               </Dialog>
