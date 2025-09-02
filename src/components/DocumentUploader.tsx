@@ -57,7 +57,7 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
       formData.append('file', file);
       formData.append('save_intermediate', 'true');
 
-      const response = await fetch('https://b292a4ac987b.ngrok-free.app/process-document', {
+      const response = await fetch('http://localhost:8000/process-document', {
         method: 'POST',
         body: formData,
       });
