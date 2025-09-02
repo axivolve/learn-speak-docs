@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ChevronRight, ChevronDown, FileText, Trash2 } from "lucide-react";
+import { ChevronRight, ChevronDown, FileText, Trash2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface StoredDocument {
   id: string;
@@ -15,6 +16,7 @@ interface DocumentSidebarProps {
   onDocumentDelete: (documentId: string) => void;
   onSectionClick: (sectionId: string) => void;
   activeSectionId?: string;
+  onAddDocument: () => void;
 }
 
 interface SectionStatus {
@@ -27,7 +29,8 @@ export const DocumentSidebar = ({
   onDocumentSelect,
   onDocumentDelete,
   onSectionClick, 
-  activeSectionId 
+  activeSectionId,
+  onAddDocument
 }: DocumentSidebarProps) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [sectionStatus] = useState<SectionStatus>({
@@ -111,97 +114,24 @@ export const DocumentSidebar = ({
                       <Trash2 className="h-3 w-3 text-destructive" />
                     </button>
                   </div>
-
-                  {/* Document Sections - Only show for active document */}
-                  {isActive && (
-                    <div className="ml-4 mt-1 space-y-1">
-                      {Object.entries(document.data).map(([sectionKey, sectionData]: [string, any]) => {
-                        const hasSubtopics = sectionData.subtopics && Object.keys(sectionData.subtopics).length > 0;
-                        const isExpanded = expandedSections[sectionKey];
-                        const isActiveSec = activeSectionId === sectionKey;
-
-                        return (
-                          <div key={sectionKey}>
-                            {/* Main Section */}
-                            <div
-                              className={cn(
-                                "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
-                                isActiveSec ? "bg-brand-accent/10 text-brand-accent" : "hover:bg-brand-surface-hover",
-                                "group"
-                              )}
-                              onClick={() => {
-                                onSectionClick(sectionKey);
-                                if (hasSubtopics) {
-                                  toggleSection(sectionKey);
-                                }
-                              }}
-                            >
-                              <div className="flex items-center space-x-2 flex-1">
-                                {hasSubtopics && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      toggleSection(sectionKey);
-                                    }}
-                                    className="p-0.5 hover:bg-brand-accent/20 rounded"
-                                  >
-                                    {isExpanded ? (
-                                      <ChevronDown className="h-3 w-3" />
-                                    ) : (
-                                      <ChevronRight className="h-3 w-3" />
-                                    )}
-                                  </button>
-                                )}
-                                <span className="text-sm">{sectionKey}</span>
-                              </div>
-                            </div>
-
-                            {/* Subtopics */}
-                            {hasSubtopics && isExpanded && (
-                              <div className="ml-6 mt-1 space-y-1">
-                                {Object.entries(sectionData.subtopics).map(([subtopicKey, subtopicData]: [string, any]) => {
-                                  const isSubtopicActive = activeSectionId === subtopicKey;
-                                  const status = sectionStatus[subtopicKey] || 'not-listened';
-
-                                  return (
-                                    <div
-                                      key={subtopicKey}
-                                      className={cn(
-                                        "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
-                                        isSubtopicActive ? "bg-brand-accent/10 text-brand-accent" : "hover:bg-brand-surface-hover"
-                                      )}
-                                      onClick={() => onSectionClick(subtopicKey)}
-                                    >
-                                      <div className="flex items-center space-x-2 flex-1">
-                                        <div className="flex items-center space-x-2">
-                                          <span className="text-xs bg-brand-secondary/10 px-1.5 py-0.5 rounded text-brand-secondary">
-                                            {subtopicKey.split(' ')[0]}
-                                          </span>
-                                          <span className="text-sm">{subtopicKey.split(' ').slice(1).join(' ')}</span>
-                                        </div>
-                                      </div>
-                                      
-                                      <div className="flex items-center space-x-2">
-                                        <div className={cn("w-2 h-2 rounded-full", getStatusColor(status))} />
-                                        <span className="text-xs text-muted-foreground">
-                                          {status === 'completed' ? '2:50' : status === 'in-progress' ? '6:50' : '6:50'}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
         </div>
+      </div>
+
+      {/* Add Document Button */}
+      <div className="p-4 border-t border-content-border">
+        <Button 
+          onClick={onAddDocument}
+          variant="outline" 
+          className="w-full"
+          size="sm"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Document
+        </Button>
       </div>
     </div>
   );

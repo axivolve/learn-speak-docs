@@ -104,6 +104,7 @@ const Index = () => {
           onDocumentDelete={handleDocumentDelete}
           onSectionClick={handleSectionClick}
           activeSectionId={activeSectionId}
+          onAddDocument={() => setIsUploadModalOpen(true)}
         />
       </div>
 
@@ -117,27 +118,23 @@ const Index = () => {
               <p className="text-sm text-muted-foreground">Audio-enabled document learning</p>
             </div>
             <div className="flex items-center space-x-3">
-              <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Document
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Upload Document</DialogTitle>
-                    <DialogDescription>
-                      Upload a PDF or Word document to generate audio narration
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DocumentUploader onUploadSuccess={handleUploadSuccess} />
-                </DialogContent>
-              </Dialog>
               <LanguageSelector language={language} onLanguageChange={setLanguage} />
             </div>
           </div>
         </div>
+
+        {/* Upload Dialog */}
+        <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Upload Document</DialogTitle>
+              <DialogDescription>
+                Upload a PDF or Word document to generate audio narration
+              </DialogDescription>
+            </DialogHeader>
+            <DocumentUploader onUploadSuccess={handleUploadSuccess} />
+          </DialogContent>
+        </Dialog>
 
         {/* Content Blocks */}
         {activeDocument ? (

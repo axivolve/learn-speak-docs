@@ -20,7 +20,8 @@ export const ContentBlock = ({
   language,
   onStatusUpdate 
 }: ContentBlockProps) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showDescription, setShowDescription] = useState(false);
   const [activeSubtopic, setActiveSubtopic] = useState<string | null>(null);
 
   const hasSubtopics = data.subtopics && Object.keys(data.subtopics).length > 0;
@@ -87,27 +88,45 @@ export const ContentBlock = ({
       {/* Section Content */}
       {isExpanded && (
         <div className="border-t border-content-border">
-          {/* Main Content */}
-          {hasMainContent && (
-            <div className="p-6 space-y-4">
-              <div className="prose prose-sm max-w-none">
-                <p className="text-muted-foreground leading-relaxed">
-                  {getText(data)}
-                </p>
+          {/* Audio Player */}
+          {hasMainContent && getAudioUrl(data) && (
+            <div className="p-6 pb-4">
+              <AudioPlayer
+                audioUrl={getAudioUrl(data)}
+                onProgressUpdate={(progress) => {
+                  if (progress > 10 && onStatusUpdate) {
+                    onStatusUpdate(sectionId, 'in-progress');
+                  }
+                  if (progress >= 95 && onStatusUpdate) {
+                    onStatusUpdate(sectionId, 'completed');
+                  }
+                }}
+              />
+            </div>
+          )}
+
+          {/* Description Panel */}
+          {hasMainContent && getText(data) && (
+            <div className="border-t border-content-border">
+              <div 
+                className="p-4 cursor-pointer hover:bg-brand-surface transition-colors flex items-center justify-between"
+                onClick={() => setShowDescription(!showDescription)}
+              >
+                <span className="text-sm font-medium text-brand-primary">Description</span>
+                {showDescription ? (
+                  <ChevronDown className="w-4 h-4 text-brand-accent" />
+                ) : (
+                  <ChevronRight className="w-4 h-4 text-brand-accent" />
+                )}
               </div>
-              
-              {getAudioUrl(data) && (
-                <AudioPlayer
-                  audioUrl={getAudioUrl(data)}
-                  onProgressUpdate={(progress) => {
-                    if (progress > 10 && onStatusUpdate) {
-                      onStatusUpdate(sectionId, 'in-progress');
-                    }
-                    if (progress >= 95 && onStatusUpdate) {
-                      onStatusUpdate(sectionId, 'completed');
-                    }
-                  }}
-                />
+              {showDescription && (
+                <div className="px-6 pb-4">
+                  <div className="prose prose-sm max-w-none">
+                    <p className="text-muted-foreground leading-relaxed">
+                      {getText(data)}
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
           )}
