@@ -78,9 +78,6 @@ export const ContentBlock = ({
             <h2 className="text-lg font-semibold text-brand-primary">{title}</h2>
           </div>
           
-          <div className="flex items-center space-x-3">
-            {getStatusBadge('not-listened')}
-          </div>
         </div>
       </div>
 
@@ -133,9 +130,6 @@ export const ContentBlock = ({
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-3">
-                        {getStatusBadge('not-listened')}
-                      </div>
                     </div>
                   </div>
 
