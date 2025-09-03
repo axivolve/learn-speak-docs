@@ -107,24 +107,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <div className="w-80 fixed left-0 top-0 h-full">
-        <DocumentSidebar
-          documents={documents.map(doc => ({ id: doc.id, name: doc.name, data: doc.content }))}
-          activeDocumentId={selectedDocument?.id || ""}
-          onDocumentSelect={handleDocumentSelect}
-          onDocumentDelete={handleDocumentDelete}
-          onSectionClick={handleSectionClick}
-          activeSectionId={activeSectionId}
-          onAddDocument={() => setIsUploadModalOpen(true)}
-        />
-      </div>
+      <DocumentSidebar
+        documents={documents.map(doc => ({ id: doc.id, name: doc.name, data: doc.content }))}
+        activeDocumentId={selectedDocument?.id || ""}
+        onDocumentSelect={handleDocumentSelect}
+        onDocumentDelete={handleDocumentDelete}
+        onSectionClick={handleSectionClick}
+        activeSectionId={activeSectionId}
+        onAddDocument={() => setIsUploadModalOpen(true)}
+      />
 
       {/* Main Content */}
-      <div className="flex-1 ml-80">
+      <div className="flex-1 lg:ml-80">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-background border-b border-content-border p-4">
+        <div className="sticky top-0 z-10 bg-background border-b border-content-border p-4 lg:pl-6">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="lg:ml-0 ml-12">
               <h1 className="text-2xl font-semibold text-brand-primary">
                 {selectedDocument?.name || "Document Learning Platform"}
               </h1>
