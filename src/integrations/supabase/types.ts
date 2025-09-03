@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      documents: {
+        Row: {
+          content: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       files: {
         Row: {
           created_at: string | null
