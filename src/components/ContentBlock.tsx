@@ -37,9 +37,9 @@ export const ContentBlock = ({
 
   const getAudioUrl = (contentData: any) => {
     switch (language) {
-      case 'hindi': return contentData.hindi_speech_url;
-      case 'gujarati': return contentData.guj_speech_url;
-      default: return contentData.eng_speech_url;
+      case 'hindi': return contentData.hi_speech_url;
+      case 'gujarati': return contentData.gu_speech_url;
+      default: return contentData.en_speech_url;
     }
   };
 
@@ -80,7 +80,6 @@ export const ContentBlock = ({
           
           <div className="flex items-center space-x-3">
             {getStatusBadge('not-listened')}
-            <span className="text-sm text-muted-foreground">6:50</span>
           </div>
         </div>
       </div>
@@ -169,12 +168,7 @@ export const ContentBlock = ({
                       </div>
                       
                       <div className="flex items-center space-x-3">
-                        {subtopicKey === "2.1 Before Commencement:" && getStatusBadge('completed')}
-                        {subtopicKey === "2.2 Lying of bricks" && getStatusBadge('in-progress')}
-                        {subtopicKey === "2.3 Mortar" && getStatusBadge('not-listened')}
-                        <span className="text-sm text-muted-foreground">
-                          {subtopicKey === "2.1 Before Commencement:" ? "2:50" : "6:50"}
-                        </span>
+                        {getStatusBadge('not-listened')}
                       </div>
                     </div>
                   </div>
