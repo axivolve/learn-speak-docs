@@ -150,7 +150,16 @@ const Index = () => {
         {/* Content Blocks */}
         {selectedDocument ? (
           <div className="p-6 space-y-6">
-            {Object.entries(selectedDocument.content).map(([sectionKey, sectionData]: [string, any]) => (
+            {Object.entries(selectedDocument.content)
+              .sort(([a], [b]) => {
+                // Sort by the numeric prefix in the section key
+                const getNumericPrefix = (key: string) => {
+                  const match = key.match(/^(\d+)/);
+                  return match ? parseInt(match[1]) : 999;
+                };
+                return getNumericPrefix(a) - getNumericPrefix(b);
+              })
+              .map(([sectionKey, sectionData]: [string, any]) => (
               <div key={sectionKey} id={`section-${sectionKey}`}>
                 <ContentBlock
                   sectionId={sectionKey}

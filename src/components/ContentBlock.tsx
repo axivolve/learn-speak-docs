@@ -112,7 +112,16 @@ export const ContentBlock = ({
 
           {/* Subtopics */}
           {hasSubtopics && <div className="border-t border-content-border">
-              {Object.entries(data.subtopics).map(([subtopicKey, subtopicData]: [string, any]) => <div key={subtopicKey} className={cn("border-b border-content-border last:border-b-0", activeSubtopic === subtopicKey ? "bg-brand-surface/50" : "")}>
+              {Object.entries(data.subtopics)
+                .sort(([a], [b]) => {
+                  // Sort by the numeric prefix in the subtopic key
+                  const getNumericPrefix = (key: string) => {
+                    const match = key.match(/^(\d+\.?\d*)/);
+                    return match ? parseFloat(match[1]) : 999;
+                  };
+                  return getNumericPrefix(a) - getNumericPrefix(b);
+                })
+                .map(([subtopicKey, subtopicData]: [string, any]) => <div key={subtopicKey} className={cn("border-b border-content-border last:border-b-0", activeSubtopic === subtopicKey ? "bg-brand-surface/50" : "")}>
                   {/* Subtopic Header */}
                   <div className="p-4 cursor-pointer hover:bg-brand-surface transition-colors" onClick={() => setActiveSubtopic(activeSubtopic === subtopicKey ? null : subtopicKey)}>
                     <div className="flex items-center justify-between">
