@@ -23,6 +23,7 @@ export const ContentBlock = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
   const [activeSubtopic, setActiveSubtopic] = useState<string | null>(null);
+  const [showSubtopicDescription, setShowSubtopicDescription] = useState<{[key: string]: boolean}>({});
 
   const hasSubtopics = data.subtopics && Object.keys(data.subtopics).length > 0;
   const hasMainContent = data.text || data.hindi_text || data.guj_text;
@@ -175,25 +176,51 @@ export const ContentBlock = ({
 
                   {/* Subtopic Content */}
                   {activeSubtopic === subtopicKey && (
-                    <div className="px-6 pb-4 ml-6 space-y-4">
-                      <div className="prose prose-sm max-w-none">
-                        <p className="text-muted-foreground leading-relaxed">
-                          {getText(subtopicData)}
-                        </p>
-                      </div>
-                      
+                    <div className="border-t border-content-border ml-6">
+                      {/* Subtopic Audio Player */}
                       {getAudioUrl(subtopicData) && (
-                        <AudioPlayer
-                          audioUrl={getAudioUrl(subtopicData)}
-                          onProgressUpdate={(progress) => {
-                            if (progress > 10 && onStatusUpdate) {
-                              onStatusUpdate(subtopicKey, 'in-progress');
-                            }
-                            if (progress >= 95 && onStatusUpdate) {
-                              onStatusUpdate(subtopicKey, 'completed');
-                            }
-                          }}
-                        />
+                        <div className="p-6 pb-4">
+                          <AudioPlayer
+                            audioUrl={getAudioUrl(subtopicData)}
+                            onProgressUpdate={(progress) => {
+                              if (progress > 10 && onStatusUpdate) {
+                                onStatusUpdate(subtopicKey, 'in-progress');
+                              }
+                              if (progress >= 95 && onStatusUpdate) {
+                                onStatusUpdate(subtopicKey, 'completed');
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Subtopic Description Panel */}
+                      {getText(subtopicData) && (
+                        <div className="border-t border-content-border">
+                          <div 
+                            className="p-4 cursor-pointer hover:bg-brand-surface transition-colors flex items-center justify-between"
+                            onClick={() => setShowSubtopicDescription(prev => ({
+                              ...prev,
+                              [subtopicKey]: !prev[subtopicKey]
+                            }))}
+                          >
+                            <span className="text-sm font-medium text-brand-primary">Description</span>
+                            {showSubtopicDescription[subtopicKey] ? (
+                              <ChevronDown className="w-4 h-4 text-brand-accent" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4 text-brand-accent" />
+                            )}
+                          </div>
+                          {showSubtopicDescription[subtopicKey] && (
+                            <div className="px-6 pb-4">
+                              <div className="prose prose-sm max-w-none">
+                                <p className="text-muted-foreground leading-relaxed">
+                                  {getText(subtopicData)}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   )}
