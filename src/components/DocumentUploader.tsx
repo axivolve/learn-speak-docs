@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
 interface DocumentUploaderProps {
-  onUploadSuccess: (data: any, documentName: string) => void;
+  onUploadSuccess: (data: any, documentName: string, documentId?: string) => void;
 }
 
 export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => {

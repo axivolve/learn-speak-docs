@@ -1,78 +1,91 @@
 import { useState, useEffect } from "react";
-import { Plus } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { DocumentUploader } from "@/components/DocumentUploader";
 import { DocumentSidebar } from "@/components/DocumentSidebar";
 import { ContentBlock } from "@/components/ContentBlock";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-
-interface StoredDocument {
-  id: string;
-  name: string;
-  data: any;
-}
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useDocuments, Document } from "@/hooks/useDocuments";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
-  const [documents, setDocuments] = useState<StoredDocument[]>([]);
-  const [activeDocumentId, setActiveDocumentId] = useState<string>("");
-  const [activeSectionId, setActiveSectionId] = useState<string>("");
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [language, setLanguage] = useState<'english' | 'hindi' | 'gujarati'>('english');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [activeSectionId, setActiveSectionId] = useState<string>("");
+  
+  const { documents, saveDocument, deleteDocument, getDocument } = useDocuments();
+  const { toast } = useToast();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  // Load documents from localStorage on component mount
+  // Handle URL-based document sharing
   useEffect(() => {
-    const saved = localStorage.getItem('documents');
-    if (saved) {
-      const parsedDocs = JSON.parse(saved);
-      setDocuments(parsedDocs);
-      if (parsedDocs.length > 0) {
-        setActiveDocumentId(parsedDocs[0].id);
-        const firstSection = Object.keys(parsedDocs[0].data)[0];
-        setActiveSectionId(firstSection);
-      }
+    const urlParams = new URLSearchParams(location.search);
+    const docId = urlParams.get('doc');
+    
+    if (docId) {
+      getDocument(docId).then(doc => {
+        if (doc) {
+          setSelectedDocument(doc);
+          const firstSection = Object.keys(doc.content)[0];
+          setActiveSectionId(firstSection);
+        } else {
+          toast({
+            title: "Document not found",
+            description: "The requested document could not be found.",
+            variant: "destructive"
+          });
+          navigate('/', { replace: true });
+        }
+      });
+    } else if (documents.length > 0 && !selectedDocument) {
+      // Select first document if no URL param and no document selected
+      setSelectedDocument(documents[0]);
+      const firstSection = Object.keys(documents[0].content)[0];
+      setActiveSectionId(firstSection);
     }
-  }, []);
+  }, [location.search, documents, getDocument, toast, navigate, selectedDocument]);
 
-  // Save documents to localStorage whenever documents change
-  useEffect(() => {
-    localStorage.setItem('documents', JSON.stringify(documents));
-  }, [documents]);
-
-  const handleUploadSuccess = (data: any, name: string) => {
-    const newDocument: StoredDocument = {
-      id: Date.now().toString(),
-      name,
-      data
-    };
-    setDocuments(prev => [...prev, newDocument]);
-    setActiveDocumentId(newDocument.id);
-    // Set first section as active
-    const firstSection = Object.keys(data)[0];
-    setActiveSectionId(firstSection);
-    setIsUploadModalOpen(false);
+  const handleUploadSuccess = async (data: any, name: string) => {
+    const documentId = await saveDocument(name, data);
+    if (documentId) {
+      // Update URL to share this document
+      navigate(`/?doc=${documentId}`, { replace: true });
+      setIsUploadModalOpen(false);
+      
+      // Copy shareable URL to clipboard
+      const shareableUrl = `${window.location.origin}/?doc=${documentId}`;
+      navigator.clipboard.writeText(shareableUrl).then(() => {
+        toast({
+          title: "Document uploaded and URL copied!",
+          description: "Share this URL with others to let them access this document.",
+        });
+      });
+    }
   };
 
   const handleDocumentSelect = (documentId: string) => {
-    setActiveDocumentId(documentId);
     const document = documents.find(doc => doc.id === documentId);
     if (document) {
-      const firstSection = Object.keys(document.data)[0];
+      setSelectedDocument(document);
+      const firstSection = Object.keys(document.content)[0];
       setActiveSectionId(firstSection);
+      // Update URL for sharing
+      navigate(`/?doc=${documentId}`, { replace: true });
     }
   };
 
-  const handleDocumentDelete = (documentId: string) => {
-    setDocuments(prev => prev.filter(doc => doc.id !== documentId));
-    if (activeDocumentId === documentId) {
-      const remaining = documents.filter(doc => doc.id !== documentId);
-      if (remaining.length > 0) {
-        setActiveDocumentId(remaining[0].id);
-        const firstSection = Object.keys(remaining[0].data)[0];
-        setActiveSectionId(firstSection);
+  const handleDocumentDelete = async (documentId: string) => {
+    await deleteDocument(documentId);
+    if (selectedDocument?.id === documentId) {
+      if (documents.length > 1) {
+        const remaining = documents.filter(doc => doc.id !== documentId);
+        setSelectedDocument(remaining[0]);
+        navigate(`/?doc=${remaining[0].id}`, { replace: true });
       } else {
-        setActiveDocumentId("");
-        setActiveSectionId("");
+        setSelectedDocument(null);
+        navigate('/', { replace: true });
       }
     }
   };
@@ -91,15 +104,13 @@ const Index = () => {
     console.log(`Section ${sectionId} status updated to: ${status}`);
   };
 
-  const activeDocument = documents.find(doc => doc.id === activeDocumentId);
-
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
       <div className="w-80 fixed left-0 top-0 h-full">
         <DocumentSidebar
-          documents={documents}
-          activeDocumentId={activeDocumentId}
+          documents={documents.map(doc => ({ id: doc.id, name: doc.name, data: doc.content }))}
+          activeDocumentId={selectedDocument?.id || ""}
           onDocumentSelect={handleDocumentSelect}
           onDocumentDelete={handleDocumentDelete}
           onSectionClick={handleSectionClick}
@@ -114,7 +125,9 @@ const Index = () => {
         <div className="sticky top-0 z-10 bg-background border-b border-content-border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-brand-primary">{activeDocument?.name}</h1>
+              <h1 className="text-2xl font-semibold text-brand-primary">
+                {selectedDocument?.name || "Document Learning Platform"}
+              </h1>
               <p className="text-sm text-muted-foreground">Audio-enabled document learning</p>
             </div>
             <div className="flex items-center space-x-3">
@@ -129,7 +142,7 @@ const Index = () => {
             <DialogHeader>
               <DialogTitle>Upload Document</DialogTitle>
               <DialogDescription>
-                Upload a PDF or Word document to generate audio narration
+                Upload a PDF or Word document to generate audio narration. The document will be instantly shareable via URL.
               </DialogDescription>
             </DialogHeader>
             <DocumentUploader onUploadSuccess={handleUploadSuccess} />
@@ -137,9 +150,9 @@ const Index = () => {
         </Dialog>
 
         {/* Content Blocks */}
-        {activeDocument ? (
+        {selectedDocument ? (
           <div className="p-6 space-y-6">
-            {Object.entries(activeDocument.data).map(([sectionKey, sectionData]: [string, any]) => (
+            {Object.entries(selectedDocument.content).map(([sectionKey, sectionData]: [string, any]) => (
               <div key={sectionKey} id={`section-${sectionKey}`}>
                 <ContentBlock
                   sectionId={sectionKey}
