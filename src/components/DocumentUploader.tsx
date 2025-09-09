@@ -89,10 +89,10 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
   };
 
   return (
-    <Card className="p-8 bg-brand-surface border-content-border">
+    <Card className="p-8 bg-brand-surface border-content-border card-shadow">
       <div className="text-center space-y-6">
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="relative">
             <Input
               type="file"
@@ -103,17 +103,27 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
             />
             <label
               htmlFor="file-upload"
-              className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-content-border rounded-lg cursor-pointer hover:border-brand-accent transition-colors"
+              className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-content-border rounded-xl cursor-pointer hover:border-brand-accent hover:bg-brand-accent/5 transition-modern group"
             >
               {file ? (
-                <div className="flex items-center space-x-2 text-brand-primary">
-                  <FileText className="h-5 w-5" />
-                  <span className="font-medium">{file.name}</span>
+                <div className="flex items-center space-x-3 text-brand-primary">
+                  <div className="w-12 h-12 bg-brand-accent/10 rounded-xl flex items-center justify-center">
+                    <FileText className="h-6 w-6 text-brand-accent" />
+                  </div>
+                  <div className="text-left">
+                    <span className="font-semibold block">{file.name}</span>
+                    <span className="text-sm text-muted-foreground">Ready to upload</span>
+                  </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center space-y-2 text-muted-foreground">
-                  <Upload className="h-8 w-8" />
-                  <span>Click to upload PDF or Word document</span>
+                <div className="flex flex-col items-center space-y-4 text-muted-foreground">
+                  <div className="w-16 h-16 bg-brand-accent/10 rounded-2xl flex items-center justify-center group-hover:bg-brand-accent/20 transition-modern">
+                    <Upload className="h-8 w-8 text-brand-accent" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-brand-primary">Click to upload document</p>
+                    <p className="text-sm">PDF or Word document</p>
+                  </div>
                 </div>
               )}
             </label>
@@ -124,13 +134,13 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
             placeholder="Enter document name"
             value={documentName}
             onChange={(e) => setDocumentName(e.target.value)}
-            className="bg-background"
+            className="bg-background border-content-border focus:border-brand-accent focus:ring-brand-accent/20"
           />
 
           <Button
             onClick={handleUpload}
             disabled={!file || !documentName.trim() || isUploading}
-            className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-medium py-2"
+            className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-semibold py-3 rounded-lg shadow-sm hover:shadow-md transition-modern"
           >
             {isUploading ? (
               <>
@@ -138,7 +148,7 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
                 Processing...
               </>
             ) : (
-              "Proceed"
+              "Upload Document"
             )}
           </Button>
         </div>
