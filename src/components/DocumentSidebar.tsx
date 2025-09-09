@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FileText, Trash2, Plus, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,32 +32,33 @@ export const DocumentSidebar = ({
   onAddDocument
 }: DocumentSidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const SidebarContent = () => (
     <div className="h-full bg-brand-surface border-r border-content-border flex flex-col">
       {/* Header */}
-      <div className="p-6 border-b border-content-border">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-brand-primary rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">A</span>
-          </div>
-          <div>
-            <h1 className="font-bold text-brand-primary text-lg">A.SHRIDHAR</h1>
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">BUILDING THOUGHTFULLY</p>
-          </div>
-        </div>
+      <div className="h-20 flex items-center justify-center border-b border-content-border px-6">
+        <button 
+          onClick={() => navigate('/')}
+        >
+          <img 
+            src="/A-Shridhar logo-black.svg" 
+            alt="A.Shridhar Logo" 
+            className="h-12 w-auto object-contain"
+          />
+        </button>
       </div>
 
       {/* Documents Section */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4">
-          <div className="flex items-center space-x-2 text-muted-foreground text-sm mb-3">
+          {/* <div className="flex items-center space-x-2 text-muted-foreground text-sm mb-4 font-medium">
             <FileText className="h-4 w-4" />
             <span>Documents</span>
-          </div>
+          </div> */}
 
           {/* Document List */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             {documents.map((document) => {
               const isActive = activeDocumentId === document.id;
               
@@ -64,16 +66,26 @@ export const DocumentSidebar = ({
                 <div key={document.id} className="group">
                   <div
                     className={cn(
-                      "flex items-center justify-between p-3 rounded-md cursor-pointer transition-colors",
-                      isActive ? "bg-brand-accent/10 text-brand-accent" : "hover:bg-brand-surface-hover"
+                      "flex items-center justify-between p-3 rounded-lg cursor-pointer transition-modern",
+                      isActive 
+                        ? "bg-brand-accent/10 text-brand-accent border border-brand-accent/20 shadow-sm" 
+                        : "hover:bg-brand-surface-hover border border-transparent hover:border-content-border"
                     )}
                     onClick={() => {
                       onDocumentSelect(document.id);
                       setIsOpen(false); // Close mobile menu on selection
                     }}
                   >
-                    <div className="flex items-center space-x-2 flex-1">
-                      <FileText className="h-4 w-4" />
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center transition-modern",
+                        isActive ? "bg-brand-accent/20" : "bg-muted"
+                      )}>
+                        <FileText className={cn(
+                          "h-4 w-4",
+                          isActive ? "text-brand-accent" : "text-muted-foreground"
+                        )} />
+                      </div>
                       <span className="text-sm font-medium truncate">{document.name}</span>
                     </div>
                     
@@ -81,9 +93,9 @@ export const DocumentSidebar = ({
                       <AlertDialogTrigger asChild>
                         <button
                           onClick={(e) => e.stopPropagation()}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-destructive/20 rounded transition-all"
+                          className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-destructive/10 rounded-md transition-modern"
                         >
-                          <Trash2 className="h-3 w-3 text-destructive" />
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
                         </button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -119,8 +131,7 @@ export const DocumentSidebar = ({
             onAddDocument();
             setIsOpen(false); // Close mobile menu
           }}
-          variant="outline" 
-          className="w-full"
+          className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-medium shadow-sm"
           size="sm"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -138,7 +149,7 @@ export const DocumentSidebar = ({
           <Button
             variant="ghost"
             size="sm"
-            className="lg:hidden fixed top-4 left-4 z-50 bg-brand-surface border border-content-border"
+            className="lg:hidden fixed top-4 left-4 z-50 bg-brand-surface border border-content-border shadow-sm hover:shadow-md transition-modern"
           >
             <Menu className="h-4 w-4" />
           </Button>

@@ -98,7 +98,7 @@ export const AudioPlayer = ({
   };
 
   return (
-    <div className={cn("bg-player-background rounded-lg p-4 border border-content-border", className)}>
+    <div className={cn("bg-player-background rounded-xl p-5 border border-content-border card-shadow", className)}>
       <audio ref={audioRef} src={audioUrl} />
       
       <div className="flex items-center space-x-4">
@@ -106,27 +106,28 @@ export const AudioPlayer = ({
           onClick={togglePlayPause}
           disabled={isLoading}
           size="sm"
-          className="bg-brand-accent hover:bg-brand-accent/90 text-white w-10 h-10 rounded-full p-0"
+          className="bg-brand-accent hover:bg-brand-accent/90 text-white w-12 h-12 rounded-full p-0 shadow-sm hover:shadow-md transition-modern"
         >
           {isLoading ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : isPlaying ? (
-            <Pause className="w-4 h-4" />
+            <Pause className="w-5 h-5" />
           ) : (
-            <Play className="w-4 h-4 ml-0.5" />
+            <Play className="w-5 h-5 ml-0.5" />
           )}
         </Button>
 
-        <div className="flex-1 space-y-2">
+        <div className="flex-1 flex items-center space-x-2">
           <Slider
             value={[duration ? (currentTime / duration) * 100 : 0]}
             onValueChange={handleSliderChange}
             max={100}
             step={1}
-            className="w-full"
+            className="flex-1"
           />
-          <div className="flex justify-between text-xs text-muted-foreground">
+          <div className="flex space-x-1 text-xs text-muted-foreground font-medium">
             <span>{formatTime(currentTime)}</span>
+            <span>/</span>
             <span>{formatTime(duration)}</span>
           </div>
         </div>
@@ -135,7 +136,7 @@ export const AudioPlayer = ({
           onClick={handleDownload}
           variant="ghost"
           size="sm"
-          className="text-muted-foreground hover:text-brand-accent"
+          className="text-muted-foreground hover:text-brand-accent hover:bg-brand-accent/10 w-10 h-10 rounded-lg transition-modern"
         >
           <Download className="w-4 h-4" />
         </Button>
