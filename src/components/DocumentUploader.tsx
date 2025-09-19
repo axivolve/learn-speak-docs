@@ -58,7 +58,7 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
       formData.append('save_intermediate', 'true');
 
       // Use environment variable with the API endpoint path
-      const baseUrl = import.meta.env.VITE_PROCESS_DOCUMENT_URL;
+      const baseUrl = import.meta.env.VITE_PROCESS_DOCUMENT_URL || 'https://methodology.ashridhar.com';
       const apiUrl = `${baseUrl}/api/process-document`;
       
       const response = await fetch(apiUrl, {
