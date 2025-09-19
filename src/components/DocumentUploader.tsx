@@ -57,7 +57,11 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
       formData.append('file', file);
       formData.append('save_intermediate', 'true');
 
-      const response = await fetch('http://dpr.ashridhar.com:8001/process-document', {
+      // Use environment variable with the API endpoint path
+      const baseUrl = import.meta.env.VITE_PROCESS_DOCUMENT_URL;
+      const apiUrl = `${baseUrl}/api/process-document`;
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         body: formData,
       });
@@ -78,9 +82,20 @@ export const DocumentUploader = ({ onUploadSuccess }: DocumentUploaderProps) => 
       setDocumentName("");
       
     } catch (error) {
+      console.error('Upload error details:', error);
+      
+      // More specific error handling
+      let errorMessage = "Failed to process the document. Please try again.";
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        errorMessage = "Network error: Unable to reach the document processing service. Please check your connection.";
+      } else if (error instanceof Error && error.message.includes('HTTP error')) {
+        errorMessage = `Server error: ${error.message}. Please try again later.`;
+      }
+      
       toast({
         title: "Upload failed",
-        description: "Failed to process the document. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
