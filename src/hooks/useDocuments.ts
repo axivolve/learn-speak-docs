@@ -18,18 +18,26 @@ export const useDocuments = () => {
   // Fetch all documents
   const fetchDocuments = async () => {
     try {
+      console.log('Fetching documents with Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('Supabase Project ID:', import.meta.env.VITE_SUPABASE_PROJECT_ID);
+      
       const { data, error } = await supabase
         .from('documents')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error details:', error);
+        throw error;
+      }
+      
+      console.log('Documents fetched successfully:', data);
       setDocuments(data || []);
     } catch (error) {
       console.error('Error fetching documents:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch documents",
+        description: `Failed to fetch documents: ${error?.message || 'Unknown error'}`,
         variant: "destructive"
       });
     } finally {
